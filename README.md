@@ -75,7 +75,7 @@ Target: under 200ms per transaction.
 | Day   | Task                                          | Status         |
 |-------|-----------------------------------------------|----------------|
 | Day 1 | EDA + Feature Engineering                     | ✅ Complete    |
-| Day 2 | PostgreSQL setup + ADASYN + 4 Models + Pipeline | 🔨 In Progress |
+| Day 2 | PostgreSQL setup + ADASYN + 4 Models + Pipeline | ✅ Complete  |
 | Day 3 | FastAPI + Redis caching + Prometheus          | ⏳ Pending     |
 | Day 4 | Kafka producer + consumer                     | ⏳ Pending     |
 | Day 5 | Grafana dashboard                             | ⏳ Pending     |
