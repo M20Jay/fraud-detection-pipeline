@@ -16,11 +16,11 @@ import time
 # ── 2. Database Connection ───────────────────────────────────────
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql://martin:martin123@localhost:5432/fraud_db"
+    "postgresql+psycopg2://martin:martin123@127.0.0.1:5432/fraud_db"
 )
 
 engine =create_engine(DATABASE_URL)
-print("Connecting to: {DATABASE_URL}")
+print(f"Connecting to: {DATABASE_URL}")
 
 # ── 3. Load CSV ──────────────────────────────────────────────────
 CSV_PATH = os.path.expanduser(
@@ -28,7 +28,7 @@ CSV_PATH = os.path.expanduser(
 )
 print("Reading creditcard.csv...")
 
-tO = time.time()
+t0 = time.time()
 df = pd.read_csv(CSV_PATH)
 df.columns = df.columns.str.lower()
 
@@ -41,7 +41,7 @@ print(f"Read time    : {time.time() - t0:.1f}s")
 print("\nLoading into PostgreSQL fraud_raw table...")
 t1 = time.time()
 
-df.tosql(
+df.to_sql(
     name      = "fraud_raw",
     con       = engine,
     if_exists = "replace",
@@ -57,8 +57,8 @@ print(f"Database: fraud_db")
 # ── 5. Verify Loading ────────────────────────────────────────────
 print("\nVerifying data in PostgreSQL...")
 
-with engine.connect as conn:
-    total = conn.execute(text("SELECT COUNT(*) FROM fraud_raw")).scaler()
+with engine.connect() as conn:
+    total = conn.execute(text("SELECT COUNT(*) FROM fraud_raw")).scalar()
     fraud = conn.execute(text("SELECT COUNT(*) FROM fraud_raw WHERE class = 1")).scalar()
     legit = conn.execute(text("SELECT COUNT(*) FROM fraud_raw WHERE class = 0")).scalar()
 
