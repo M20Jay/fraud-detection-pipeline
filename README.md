@@ -72,15 +72,15 @@ Target: under 200ms per transaction.
 
 ## Progress
 
-| Day   | Task                                          | Status         |
-|-------|-----------------------------------------------|----------------|
-| Day 1 | EDA + Feature Engineering                     | ✅ Complete    |
-| Day 2 | PostgreSQL setup + ADASYN + 4 Models + Pipeline | ✅ Complete  |
-| Day 3 | FastAPI + Redis caching + Prometheus          | ✅ Complete    |
-| Day 4 | Kafka producer + consumer                     | ⏳ Pending     |
-| Day 5 | Grafana dashboard                             | ⏳ Pending     |
-| Day 6 | Business impact analysis                      | ⏳ Pending     |
-| Day 7 | Deploy to Render                              | ⏳ Pending     |
+| Day   | Task                                           | Status         |
+|-------|----------------------------------------------- |----------------|
+| Day 1 | EDA + Feature Engineering                      | ✅ Complete    |
+| Day 2 | PostgreSQL setup + ADASYN + 4 Models + Pipeline| ✅ Complete  |
+| Day 3 | FastAPI + Redis caching + Prometheus           | ✅ Complete    |
+| Day 4 | Kafka producer + consumer — real time streaming| ✅ Complete  |
+| Day 5 | Grafana dashboard                              | ⏳ Pending     |
+| Day 6 | Business impact analysis                       | ⏳ Pending     |
+| Day 7 | Deploy to Render                               | ⏳ Pending     |
 
 ---
 
