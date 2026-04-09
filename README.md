@@ -88,10 +88,10 @@ Target: under 200ms per transaction.
 ### FastAPI — scoring every transaction
 ![FastAPI](screenshots/day4_fastapi.png)
 
-### Producer — streaming from PostgreSQL
+### Consumer — real time fraud scoring
 ![Producer](screenshots/day4_producer.png)
 
-### Consumer — real-time fraud scoring
+### Producer — streaming from PostgreSQL
 ![Consumer](screenshots/day4_consumer.png)
 
 ---
