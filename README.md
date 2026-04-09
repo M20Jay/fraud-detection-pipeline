@@ -83,7 +83,18 @@ Target: under 200ms per transaction.
 | Day 7 | Deploy to Render                               | ⏳ Pending     |
 
 ---
+## Day 4 — Kafka Real-Time Streaming
 
+### FastAPI — scoring every transaction
+![FastAPI](screenshots/day4_fastapi.png)
+
+### Producer — streaming from PostgreSQL
+![Producer](screenshots/day4_producer.png)
+
+### Consumer — real-time fraud scoring
+![Consumer](screenshots/day4_consumer.png)
+
+---
 ## Dataset
 
 Kaggle Credit Card Fraud Detection — 284,807 transactions — 0.17% fraud rate  
