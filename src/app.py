@@ -21,9 +21,9 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 # ── 2. App Setup ─────────────────────────────────────────────────
 app = FastAPI(
-    title = "fraud Detection API",
-    description = "Real-time credit card fraud scoring pipeline",
-    version ="1.0.0"
+    title="Fraud Detection API",
+    description="Detects fraudulent credit card transactions in real time using Random Forest. Built by Martin James — MLOps Engineer | github.com/M20Jay",
+    version="1.0.0"
 )
 # ── 3. Load Pipeline ─────────────────────────────────────────────
 MODEL_PATH = os.path.expanduser("~/Documents/GitHub/fraud-detection-pipeline/src/fraud_pipeline.pkl")
