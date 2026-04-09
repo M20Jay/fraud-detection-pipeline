@@ -15,7 +15,8 @@ from sqlalchemy import create_engine, text
 
 # ── 2. Database Connection ────────────────────────────────────────
 DATABASE_URL = os.environ.get(
-    "postgresql+pyscopg2://martin:martin123@127.0.0.1:5432/fraud_db"
+    "DATABASE_URL",
+    "postgresql+psycopg2://martin:martin123@127.0.0.1:5432/fraud_db"
 )
 
 engine =create_engine(DATABASE_URL)
