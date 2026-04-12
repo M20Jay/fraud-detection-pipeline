@@ -1,57 +1,70 @@
+cat > ~/Documents/GitHub/fraud-detection-pipeline/src/app.py << 'ENDOFFILE'
 # ================================================================
 # Week 2 — Credit Card Fraud Detection Pipeline
 # File: src/app.py
-# Author: Martin James | github.com/M20Jay
+# Author: Martin James Ng'ang'a | github.com/M20Jay
 # Purpose: FastAPI application — real time fraud scoring
-#          Loads fraud_pipeline.pkl and scores transactions
-#          Redis caching — Prometheus metrics — PostgreSQL logging
+#          Render-compatible — graceful fallback if no DB/Redis
 # ================================================================
-# ── 1. Imports ───────────────────────────────────────────────────
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
 import numpy as np
-import redis
 import json
 import hashlib
 import os
 import time
-from sqlalchemy import create_engine,text
 from prometheus_fastapi_instrumentator import Instrumentator
 
-# ── 2. App Setup ─────────────────────────────────────────────────
 app = FastAPI(
     title="Fraud Detection API",
-    description="Detects fraudulent credit card transactions in real time using Random Forest. Built by Martin James — MLOps Engineer | github.com/M20Jay",
+    description="Detects fraudulent credit card transactions in real time using LightGBM. Built by Martin James Nganga — MLOps Engineer | github.com/M20Jay",
     version="1.0.0"
 )
-# ── 3. Load Pipeline ─────────────────────────────────────────────
-MODEL_PATH = os.path.expanduser("~/Documents/GitHub/fraud-detection-pipeline/src/fraud_pipeline.pkl")
+
+MODEL_PATH = os.environ.get(
+    "MODEL_PATH",
+    os.path.expanduser("~/Documents/GitHub/fraud-detection-pipeline/src/fraud_pipeline.pkl")
+)
 pipeline = joblib.load(MODEL_PATH)
-print(f"✅ Pipeline loaded — {MODEL_PATH}")
+print(f"Pipeline loaded: {MODEL_PATH}")
 
-# ── 4. Database Connection ────────────────────────────────────────
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql+psycopg2://martin:martin123@127.0.0.1:5432/fraud_db"
-)
-engine = create_engine(DATABASE_URL)
-print(f"✅ Database connected")
+try:
+    import redis
+    redis_client = redis.Redis(
+        host=os.environ.get("REDIS_HOST", "localhost"),
+        port=int(os.environ.get("REDIS_PORT", 6379)),
+        db=0,
+        decode_responses=True,
+        socket_connect_timeout=2
+    )
+    redis_client.ping()
+    REDIS_AVAILABLE = True
+    print("Redis connected")
+except Exception:
+    redis_client = None
+    REDIS_AVAILABLE = False
+    print("Redis not available — caching disabled")
 
-# ── 5. Redis Connection ───────────────────────────────────────────
-redis_client = redis.Redis(
-    host = "localhost",
-    port = 6379,
-    db = 0,
-    decode_responses = True
-)
+try:
+    from sqlalchemy import create_engine, text
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    if DATABASE_URL:
+        engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": 5})
+        DB_AVAILABLE = True
+        print("Database connected")
+    else:
+        engine = None
+        DB_AVAILABLE = False
+        print("No DATABASE_URL — DB logging disabled")
+except Exception:
+    engine = None
+    DB_AVAILABLE = False
+    print("Database not available")
 
-print(f"✅ Redis connected")
-
-# ── 6. Prometheus ─────────────────────────────────────────────────
 Instrumentator().instrument(app).expose(app)
 
-# ── 7. Transaction Input Model ────────────────────────────────────
 class Transaction(BaseModel):
     time:   float
     v1:     float
@@ -84,32 +97,32 @@ class Transaction(BaseModel):
     v28:    float
     amount: float
 
-# ── 8. Health Endpoint ────────────────────────────────────────────
 @app.get("/health")
 def health():
     return {
-        "status": "healthy",
-        "model"   : "Random Forest",
-        "version" : "1.0.0"
+        "status"   : "healthy",
+        "model"    : "LightGBM",
+        "version"  : "1.0.0",
+        "redis"    : "connected" if REDIS_AVAILABLE else "disabled",
+        "database" : "connected" if DB_AVAILABLE else "disabled"
     }
 
-# ── 9. Predict Endpoint ───────────────────────────────────────────
 @app.post("/predict")
 def predict(transaction: Transaction):
     start_time = time.time()
-
-    # ── Redis Cache Check ─────────────────────────────────────
     transaction_dict = transaction.model_dump()
-    cache_key = hashlib.md5(
-        json.dumps(transaction_dict, sort_keys = True).encode()).hexdigest()
-    
-    cached = redis_client.get(cache_key)
-    if cached:
-        result = json.loads(cached)
-        result["source"] = "cache"
-        return result
 
-    # ── Model Scoring ─────────────────────────────────────────
+    cache_key = hashlib.md5(
+        json.dumps(transaction_dict, sort_keys=True).encode()
+    ).hexdigest()
+
+    if REDIS_AVAILABLE:
+        cached = redis_client.get(cache_key)
+        if cached:
+            result = json.loads(cached)
+            result["source"] = "cache"
+            return result
+
     features = np.array([[
         transaction_dict["time"],
         transaction_dict["v1"],  transaction_dict["v2"],
@@ -130,10 +143,10 @@ def predict(transaction: Transaction):
     ]])
 
     fraud_probability = pipeline.predict_proba(features)[0][1]
-    fraud_predicted = bool(fraud_probability > 0.5)
-    risk_level = "HIGH" if fraud_probability >= 0.7 else \
-        "MEDIUM" if fraud_probability >= 0.3 else "LOW"
-    response_time = round((time.time() - start_time) * 1000, 2)
+    fraud_predicted   = bool(fraud_probability > 0.5)
+    risk_level        = "HIGH" if fraud_probability >= 0.7 else \
+                        "MEDIUM" if fraud_probability >= 0.3 else "LOW"
+    response_time     = round((time.time() - start_time) * 1000, 2)
 
     result = {
         "fraud_probability" : round(float(fraud_probability), 4),
@@ -143,34 +156,22 @@ def predict(transaction: Transaction):
         "model_version"     : "1.0.0",
         "source"            : "model"
     }
-    # ── Cache Result in Redis ─────────────────────────────────
-    redis_client.setex(cache_key, 300, json.dumps(result))
 
-    # ── Save to PostgreSQL ────────────────────────────────────
-    save_prediction(transaction_dict, result)
+    if REDIS_AVAILABLE:
+        redis_client.setex(cache_key, 300, json.dumps(result))
+
+    if DB_AVAILABLE:
+        save_prediction(transaction_dict, result)
 
     return result
 
-# ── 10. Save Prediction to PostgreSQL ────────────────────────────
 def save_prediction(transaction_dict: dict, result: dict):
     try:
         with engine.connect() as conn:
             conn.execute(text("""
-                INSERT INTO fraud_predictions (
-                    amount,
-                    fraud_probability,
-                    fraud_predicted,
-                    risk_level,
-                    value_at_risk,
-                    model_version
-                ) VALUES (
-                    :amount,
-                    :fraud_probability,
-                    :fraud_predicted,
-                    :risk_level,
-                    :value_at_risk,
-                    :model_version
-                )
+                INSERT INTO fraud_predictions
+                (amount, fraud_probability, fraud_predicted, risk_level, value_at_risk, model_version)
+                VALUES (:amount, :fraud_probability, :fraud_predicted, :risk_level, :value_at_risk, :model_version)
             """), {
                 "amount"            : transaction_dict["amount"],
                 "fraud_probability" : result["fraud_probability"],
@@ -180,5 +181,7 @@ def save_prediction(transaction_dict: dict, result: dict):
                 "model_version"     : result["model_version"]
             })
             conn.commit()
+        print("Prediction saved to PostgreSQL")
     except Exception as e:
-        print(f"❌ Database save failed: {e}")
+        print(f"Database save failed: {e}")
+ENDOFFILE

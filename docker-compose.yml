@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: martin123
       POSTGRES_DB: fraud_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -28,7 +28,7 @@ services:
       - prometheus_data:/prometheus
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.4.2
     container_name: fraud_grafana
     ports:
       - "3000:3000"
