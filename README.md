@@ -137,7 +137,7 @@ protecting **$4,504.47** in potential losses. Average fraudulent transaction val
 ## Day 5 — Grafana Dashboard
 
 ### Full Dashboard — 5 Panels Live
-![Grafana Dashboard](screenshots/day5_grafana.png)
+![Grafana Dashboard](images/dashboard_day5.png)
 
 | Panel | Type | Metric |
 |-------|------|--------|
