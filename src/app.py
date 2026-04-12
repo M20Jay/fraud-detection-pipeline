@@ -183,4 +183,3 @@ def save_prediction(transaction_dict: dict, result: dict):
         print("Prediction saved to PostgreSQL")
     except Exception as e:
         print(f"Database save failed: {e}")
-ENDOFFILE
