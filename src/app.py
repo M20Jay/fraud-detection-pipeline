@@ -1,4 +1,3 @@
-cat > ~/Documents/GitHub/fraud-detection-pipeline/src/app.py << 'ENDOFFILE'
 # ================================================================
 # Week 2 — Credit Card Fraud Detection Pipeline
 # File: src/app.py
