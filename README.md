@@ -16,7 +16,7 @@ Target: under 200ms per transaction. Achieved: 22ms average response time.
 
 ## Live API
 
-🌐 [Interactive Docs](https://fraud-detection-pipeline-nznd.onrender.com/docs)
+🌐 [Interactive Docs](http://18.184.3.203:8003/docs)
 
 ---
 
