@@ -441,3 +441,23 @@ docker compose -f docker-compose-api.yml logs --tail=20
 
 *Week 2 of 15 · Real-Time Fraud Detection Pipeline · Built in Nairobi, Kenya 🇰🇪*
 *Live API: http://18.184.3.203:8003/docs · Repository: https://github.com/M20Jay/fraud-detection-pipeline*
+
+---
+
+## Deep Dives — Critical Concepts
+
+### PR-AUC vs ROC-AUC — When Each Applies
+
+0.17% fraud rate — 492 fraud vs 284,315 legitimate. A model predicting "no fraud" for everyone: ROC-AUC ~0.99 (misleading), PR-AUC ~0.002 (correctly shows useless). Rule: balanced datasets → ROC-AUC. Imbalanced datasets under 10% minority → always PR-AUC.
+
+### Redis TTL — Balancing Speed vs Freshness
+
+TTL too long → stale predictions. TTL too short → no cache benefit. TTL=300 seconds balances: most duplicate transactions arrive within 5 minutes, model doesn't update more than once per hour.
+
+### Kafka Architecture — Producer, Consumer, Topic
+
+Without Kafka: if API crashes, transactions are lost. With Kafka: messages persist durably, consumer can replay, multiple consumers can process in parallel. Zookeeper manages cluster metadata — must start before Kafka via depends_on.
+
+### Prometheus Pull Model vs Push Model
+
+Push model: application sends metrics → server. Problem: if app crashes, last metrics lost. Pull model (Prometheus): scrapes /metrics every 15s. Benefit: Prometheus immediately knows if scrape fails = application down.
