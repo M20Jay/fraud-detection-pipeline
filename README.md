@@ -16,7 +16,7 @@ Target: under 200ms per transaction. Achieved: 22ms average response time.
 
 ## Live API
 
-🌐 [Interactive Docs](http://52.57.213.229:8003/docs)
+🌐 [Interactive Docs](http://3.67.15.230:8003/docs)
 
 ---
 
