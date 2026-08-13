@@ -6,7 +6,7 @@
 
 ## Overview
 
-Production real-time fraud detection pipeline scoring 284,807 transactions at 22ms average response time. LightGBM model with Kafka streaming, Redis caching, Prometheus monitoring, and 5-panel Grafana dashboard.
+Production real-time fraud detection pipeline scoring 284,807 transactions at 22ms average response time. Random Forest model with Kafka streaming, Redis caching, Prometheus monitoring, and 5-panel Grafana dashboard.
 
 **Target:** under 200ms per transaction. **Achieved:** 22ms average.
 
@@ -17,7 +17,7 @@ Production real-time fraud detection pipeline scoring 284,807 transactions at 22
 | Metric | Result |
 |--------|--------|
 | Dataset | 284,807 transactions · 0.17% fraud rate |
-| Best Model | LightGBM · best PR-AUC |
+| Best Model | Random Forest · best PR-AUC |
 | Response time | 22ms average |
 | Fraud detected | 50 / 200 scored (25%) |
 | Value protected | $4,504.47 |
@@ -38,7 +38,7 @@ Production real-time fraud detection pipeline scoring 284,807 transactions at 22
 | Total Value at Risk (USD) | $4,504.47 |
 | Average Fraudulent Amount | $85.11 |
 
-LightGBM flagged 50 out of 200 transactions as fraudulent, protecting **$4,504.47** in potential losses. Average fraudulent transaction value was **$85.11** — consistent with real-world card-present fraud patterns.
+Random Forest flagged 50 out of 200 transactions as fraudulent, protecting **$4,504.47** in potential losses. Average fraudulent transaction value was **$85.11** — consistent with real-world card-present fraud patterns.
 
 ---
 
@@ -47,7 +47,7 @@ LightGBM flagged 50 out of 200 transactions as fraudulent, protecting **$4,504.4
 | Day | Task | Status |
 |-----|------|--------|
 | Day 1 | EDA + Feature Engineering | ✅ |
-| Day 2 | ADASYN + 4 Models + LightGBM Pipeline saved | ✅ |
+| Day 2 | ADASYN + 4 Models + Random Forest Pipeline saved | ✅ |
 | Day 3 | FastAPI + Redis caching + Prometheus | ✅ |
 | Day 4 | Kafka producer + consumer — real-time streaming | ✅ |
 | Day 5 | Grafana dashboard — 5 panels live | ✅ |
@@ -99,7 +99,7 @@ creditcard.csv (284,807 transactions)
     ↓
 fraud_raw table (PostgreSQL)
     ↓
-ADASYN balancing → 4 Models trained → LightGBM selected (best PR-AUC)
+ADASYN balancing → 4 Models trained → Random Forest selected (best PR-AUC)
     ↓
 fraud_pipeline.pkl saved
     ↓
@@ -120,10 +120,10 @@ Grafana (:3000) — 5-panel live monitoring dashboard
 
 ## Key Concepts
 
-### Why LightGBM Over XGBoost for Fraud
+### Why Random Forest Won — and Why LightGBM Was Still Worth Comparing
 
 ```python
-# 4 models evaluated — LightGBM wins on PR-AUC
+# 4 models evaluated — Random Forest won on PR-AUC (0.8684)
 # Fraud detection uses PR-AUC not ROC-AUC
 # Why: 0.17% fraud rate — extreme class imbalance
 # ROC-AUC is optimistic on imbalanced datasets
