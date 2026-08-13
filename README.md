@@ -2,7 +2,7 @@
 
 **Author:** Martin James Ng'ang'a | github.com/M20Jay  
 **Status:** ✅ Week 2 Complete — Grafana Dashboard Live  
-**Stack:** LightGBM · XGBoost · ADASYN · sklearn Pipeline · FastAPI · PostgreSQL · Redis · Kafka · Prometheus · Grafana · Docker
+**Stack:** Random Forest · XGBoost · LightGBM · ADASYN · sklearn Pipeline · FastAPI · PostgreSQL · Redis · Kafka · Prometheus · Grafana · Docker
 
 ---
 
@@ -26,11 +26,11 @@ Target: under 200ms per transaction. Achieved: 22ms average response time.
           ↓
     fraud_raw table (PostgreSQL)
           ↓
-    ADASYN balancing → 4 Models trained → LightGBM selected (best PR-AUC)
+    ADASYN balancing → 4 Models trained → Random Forest selected (best PR-AUC)
           ↓
     fraud_pipeline.pkl saved
           ↓
-    FastAPI (:8000) scores transactions in real time
+    FastAPI (:8002) scores transactions in real time
           ↓
     Redis (:6379) caches predictions (300s TTL)
           ↓
@@ -106,12 +106,12 @@ Target: under 200ms per transaction. Achieved: 22ms average response time.
 | Day   | Task                                            | Status       |
 |-------|-------------------------------------------------|--------------|
 | Day 1 | EDA + Feature Engineering                       | ✅ Complete  |
-| Day 2 | ADASYN + 4 Models + LightGBM Pipeline saved     | ✅ Complete  |
+| Day 2 | ADASYN + 4 Models + Random Forest Pipeline saved     | ✅ Complete  |
 | Day 3 | FastAPI + Redis caching + Prometheus            | ✅ Complete  |
 | Day 4 | Kafka producer + consumer — real time streaming | ✅ Complete  |
 | Day 5 | Grafana dashboard — 5 panels live               | ✅ Complete  |
 | Day 6 | Business impact analysis                        | ✅ Complete  |
-| Day 7 | Deploy to Render                                | ✅ Complete  |
+| Day 7 | Deploy to AWS EC2                                | ✅ Complete  |
 
 ---
 
@@ -128,7 +128,7 @@ Target: under 200ms per transaction. Achieved: 22ms average response time.
 | Total Value at Risk (USD) | $4,504.47 |
 | Average Fraudulent Amount | $85.11 |
 
-**Key Finding:** The LightGBM model flagged 50 out of 200 transactions as fraudulent,
+**Key Finding:** The Random Forest model flagged 50 out of 200 transactions as fraudulent,
 protecting **$4,504.47** in potential losses. Average fraudulent transaction value was
 **$85.11** — consistent with real-world card-present fraud patterns.
 
