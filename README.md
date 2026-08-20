@@ -26,6 +26,8 @@ A fraud score in isolation is not a decision. In production, this model is stage
 
 `Detection → SIEM → Case Management → SOAR → Feedback`
 
+![Five-stage detection to response pipeline](screenshots/day8_5stage_handoff.png)
+
 The score is correlated against other signals in a **SIEM**, routed to a human analyst through **case management** with the reasoning attached, acted on through **SOAR** tooling (freeze, lock, escalate), and the analyst's final call flows back as a label that closes the loop into the next retrain.
 
 This repo owns stage one, and is explicitly designed to hand off cleanly into the other four.
@@ -68,6 +70,25 @@ This repo owns stage one, and is explicitly designed to hand off cleanly into th
     Prometheus (:9090) scrapes /metrics every 15s
           ↓
     Grafana (:3000) — 5-panel live monitoring dashboard
+
+### In Practice
+
+**FastAPI scoring transactions live:**
+
+![FastAPI live scoring](screenshots/day4_fastapi.png)
+
+**Kafka producer streaming from PostgreSQL:**
+
+![Kafka producer](screenshots/day4_producer.png)
+
+**Kafka consumer scoring in real time:**
+
+![Kafka consumer](screenshots/day4_consumer.png)
+
+**Grafana — 5-panel live monitoring:**
+
+![Grafana dashboard](screenshots/day5_grafana.png)
+
 
 ---
 
