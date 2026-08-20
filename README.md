@@ -12,21 +12,32 @@ A model that's 99.8% accurate can be completely useless — and worse, dangerous
 
 Fraud detection isn't just a classification problem. It's an adversarial one. Every model has a decision boundary — the exact point where "probably fine" becomes "flag this." An attacker doesn't need to beat the model; they only need to *map* that boundary, through repeated near-threshold probing, and walk around it. This is a real, documented attack class — **evasion attack** — and most fraud-detection writeups never mention it.
 
-This project treats that seriously, from two angles:
+This project treats that seriously, from three angles:
 
-**The class imbalance problem.** With 284,807 transactions and only 492 genuinely fraudulent (0.17%), the obvious metric — accuracy — actively lies. A model predicting "not fraud" for everything scores 99.83% while catching nothing. Four models were trained and compared; the winner was selected by **PR-AUC**, the metric that can't be fooled by this level of imbalance, not the one that looks best on paper.
+### 1. Class imbalance
 
-**The detection-response gap.** A fraud score in isolation is not a decision. In production, this model is stage one of a five-stage pipeline: the score is correlated against other signals in a **SIEM**, routed to a human analyst through **case management** with the reasoning attached (not just a number — nobody can act on "the model said so"), acted on through **SOAR** tooling (freeze, lock, escalate), and the analyst's final call flows back as a label that closes the loop into the next retrain. This repo owns stage one, and is explicitly designed to hand off cleanly into the other four.
+With 284,807 transactions and only 492 genuinely fraudulent (0.17%), the obvious metric — accuracy — actively lies. A model predicting "not fraud" for everything scores 99.83% while catching nothing.
 
-**Model-level threats, not just data-level ones.** Beyond evasion probing, this design also considers:
+Four models were trained and compared; the winner was selected by **PR-AUC**, the metric that can't be fooled by this level of imbalance.
 
-- **Data poisoning** — manipulated labels gradually shifting what the model considers "normal" through the retraining loop. Mitigated by human-reviewed retraining: a challenger model must prove it beats the current one before it's ever promoted, never auto-deployed blind.
-- **Model extraction** — an attacker querying the API enough times to reverse-engineer its logic. Mitigated by returning `risk_level` and top contributing factors, not raw probabilities or full feature weights.
+### 2. The detection-response gap
 
-Target: under 200ms per transaction. Achieved: 22ms average response time, live, with every single prediction logged and explainable.
+A fraud score in isolation is not a decision. In production, this model is stage one of a five-stage pipeline:
 
----
+`Detection → SIEM → Case Management → SOAR → Feedback`
 
+The score is correlated against other signals in a **SIEM**, routed to a human analyst through **case management** with the reasoning attached, acted on through **SOAR** tooling (freeze, lock, escalate), and the analyst's final call flows back as a label that closes the loop into the next retrain.
+
+This repo owns stage one, and is explicitly designed to hand off cleanly into the other four.
+
+### 3. Model-level threats, not just data-level ones
+
+| Threat | Mitigation |
+|---|---|
+| **Data poisoning** — manipulated labels gradually shifting what the model considers "normal" | Human-reviewed retraining — a challenger model must prove it beats the current one before it's ever promoted |
+| **Model extraction** — querying the API enough times to reverse-engineer its logic | Returning `risk_level` and top contributing factors, not raw probabilities or full feature weights |
+
+**Target:** under 200ms per transaction. **Achieved:** 22ms average response time, live, with every single prediction logged and explainable.
 
 ---
 
