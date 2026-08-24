@@ -185,7 +185,6 @@ protecting **$4,504.47** in potential losses. Average fraudulent transaction val
 ## Day 5 — Grafana Dashboard
 
 ### Full Dashboard — 5 Panels Live
-![Grafana Dashboard](screenshots/day5_grafana.png)
 
 | Panel | Type | Metric |
 |-------|------|--------|
@@ -199,14 +198,7 @@ protecting **$4,504.47** in potential losses. Average fraudulent transaction val
 
 ## Day 4 — Kafka Real-Time Streaming
 
-### FastAPI — scoring every transaction
-![FastAPI](screenshots/day4_fastapi.png)
-
-### Producer — streaming from PostgreSQL
-![Producer](screenshots/day4_producer.png)
-
-### Consumer — real time fraud scoring
-![Consumer](screenshots/day4_consumer.png)
+The full architecture is shown in **In Practice**, above.
 
 ---
 
