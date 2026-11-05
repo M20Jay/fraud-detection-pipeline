@@ -5,7 +5,7 @@ services:
     container_name: fraud_postgres
     environment:
       POSTGRES_USER: martin
-      POSTGRES_PASSWORD: martin123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: fraud_db
     ports:
       - "5433:5432"
@@ -33,7 +33,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: martin123
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
