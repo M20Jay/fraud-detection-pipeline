@@ -12,14 +12,13 @@ import json
 import time
 import os
 from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
 
 # ── 2. Database Connection ────────────────────────────────────────
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql+psycopg2://martin:martin123@127.0.0.1:5433/fraud_db"
-)
+load_dotenv()
+DATABASE_URL = os.environ["DATABASE_URL"]
 
-engine =create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL)
 print("✅ Connected to PostgreSQL")
 
 # ── 3. Kafka Producer Setup ───────────────────────────────────────
