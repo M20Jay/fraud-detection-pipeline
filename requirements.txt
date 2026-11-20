@@ -11,3 +11,5 @@ redis==5.0.4
 python-dotenv==1.0.1
 
 pandas==2.2.3
+imbalanced-learn==0.12.4
+xgboost==3.4.1
