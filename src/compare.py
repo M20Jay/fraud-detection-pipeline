@@ -4,7 +4,7 @@ import time
 
 from sklearn.model_selection import StratifiedKFold, cross_validate
 
-from modeling import SEED, build_pipeline, candidate_models
+from modeling import SEED, build_pipeline, candidate_models, imbalance_ratio
 from train import load_data, split
 
 
@@ -13,7 +13,7 @@ def main():
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
     print(f"No-skill PR-AUC (fraud rate): {y_train.mean():.5f}", flush=True)
 
-    for name, model in candidate_models().items():
+    for name, model in candidate_models(imbalance_ratio(y_train)).items():
         t0 = time.time()
         res = cross_validate(
             build_pipeline(model), X_train, y_train,
@@ -21,7 +21,7 @@ def main():
         )
         s = res["test_score"]
         folds = [round(float(x), 3) for x in s]
-        print(f"{name:20s} PR-AUC {s.mean():.4f} +/- {s.std():.4f}  "
+        print(f"{name:36s} PR-AUC {s.mean():.4f} +/- {s.std():.4f}  "
               f"folds={folds}  ({time.time() - t0:.0f}s)", flush=True)
 
 
