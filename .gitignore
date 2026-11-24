@@ -15,3 +15,5 @@ logs/
 # local environment and secrets
 .venv/
 .env
+*.npy
+y_train.csv
