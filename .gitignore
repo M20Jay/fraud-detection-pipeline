@@ -17,3 +17,5 @@ logs/
 .env
 *.npy
 y_train.csv
+*.pkl
+*.pkl
